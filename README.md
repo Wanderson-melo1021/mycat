@@ -1,9 +1,8 @@
 
 # mycat
 
-# mycat
-
 ![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)
+![Build](https://github.com/Wanderson-melo1021/mycat/actions/workflows/build.yml/badge.svg)
 ![C](https://img.shields.io/badge/language-C11-orange)
 
 <p align="center">
