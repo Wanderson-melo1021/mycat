@@ -1,0 +1,12 @@
+# do NOT ignore object files (educational purpose)
+
+# ignore only final binary
+bin/mycat
+
+# editor
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
