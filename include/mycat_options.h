@@ -6,6 +6,8 @@ typedef struct {
     int number_nonblank_lines;
     int show_ends;
     int show_tabs;
+    int cat_prefix_lines;
+    int cat_once;
 } MyCatOptions;
 
 void mycat_options_init(MyCatOptions *options);
@@ -16,5 +18,4 @@ int mycat_parse_options(int argc, char *argv[],
 void mycat_print_usage(const char *program_name);
 
 #endif
-
 

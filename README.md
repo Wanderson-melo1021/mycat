@@ -31,6 +31,7 @@ Each part is clean, independent, and easy to navigate. That's how I like to stru
 - **Modular design**: clear separation between logic layers  
 - **Strict build rules** with `-Wall -Wextra -Wpedantic -Werror`  
 - **Stream-by-stream** file processing (`fgetc`, `fputc`)  
+- **Explicit runtime diagnostics** for invalid options and I/O failures
 - Support for:
   - standard input and explicit `-`
   - multiple files in sequence
@@ -40,6 +41,8 @@ Each part is clean, independent, and easy to navigate. That's how I like to stru
   - `-b` → number only non-empty lines (overrides `-n`)  
   - `-E` → show `$` at end of each line  
   - `-T` → show tabs as `^I`
+  - `-C` → prefix each output line with `🐱`
+  - `-c` → print one `🐱` line before all output
 
 Grouped flags like `-nET` and `-bE` are fully supported.
 
@@ -59,6 +62,14 @@ mycat/
 ├── include/
 │   ├── mycat.h
 │   └── mycat_options.h
+├── mycat-lang/            # Separate toy language project
+│   ├── Makefile
+│   ├── GUIDE.md
+│   ├── README.md
+│   ├── examples/
+│   │   └── demo.mcl
+│   └── src/
+│       └── main.c
 ├── src/
 │   ├── main_mycat.c
 │   ├── mycat.c
@@ -98,6 +109,7 @@ make clean
 Behavior:
 - If no file is specified, input is read from `stdin`.  
 - Multiple files are concatenated sequentially.  
+- If one file fails, `mycat` reports the error, keeps processing remaining files, and exits with failure status.  
 - A lone `-` reads explicitly from `stdin` at that point.
 
 ### Examples
@@ -107,8 +119,35 @@ Behavior:
 ./bin/mycat -n file.txt
 ./bin/mycat -b file.txt
 ./bin/mycat -ET file.txt
+./bin/mycat -C file.txt
+./bin/mycat -c -C file.txt
 ./bin/mycat -n file1.txt file2.txt
 ./bin/mycat -n -
+```
+
+## mycat-lang (separate project)
+
+There is now a separate toy language project in `mycat-lang/`, with:
+- variables
+- arithmetic
+- `if` / `else` / `while` blocks using `end`
+- string printing (including emoji like `🐱`)
+
+Quick run:
+
+```bash
+cd mycat-lang
+make
+./bin/mycat-lang examples/demo.mcl
+```
+
+Language guide: `mycat-lang/GUIDE.md`
+
+Pipeline-friendly examples:
+
+```bash
+./bin/mycat -C file.txt | awk -F'\t' '{print $2}'
+./bin/mycat -C file.txt | perl -F'\t' -lane 'print $F[1]'
 ```
 
 ## Implementation Notes
@@ -159,7 +198,7 @@ It forces clean, portable code and makes warnings impossible to ignore.
 - Grouped short-option parsing  
 - `stdin` and `-` handling  
 - Multiple file concatenation  
-- `-n`, `-b`, `-E`, and `-T`  
+- `-n`, `-b`, `-E`, `-T`, `-C`, and `-c`  
 - Proper precedence of `-b` over `-n`
 
 **Planned ideas:**
